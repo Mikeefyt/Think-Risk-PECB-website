@@ -1,0 +1,10 @@
+# Build output: the zip shared with the client is rebuilt from Think-Risk-Website-Redesign/
+*.zip
+
+# Personal Claude Code settings (shared ones like .claude/launch.json are committed)
+.claude/settings.local.json
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store

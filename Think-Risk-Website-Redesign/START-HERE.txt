@@ -1,0 +1,107 @@
+Think Risk International - PECB training website (redesign)
+Prepared 29 October 2026. Updated 30 October 2026 (technical quick wins: lighter images,
+text contrast, search/social tags, course structured data). Design status: draft for review, not yet approved.
+
+OPEN THE SITE
+1. Extract this ZIP fully to a folder.
+2. Open index.html in Chrome, Edge, Firefox or Safari.
+3. Keep all the HTML files and the "assets" folder together so styles, images and navigation work.
+The Manrope and Instrument Serif fonts load from Google Fonts, so an internet connection is needed for the exact typography.
+
+FILES
+index.html      Home
+courses.html    Course catalogue (cards, levels, prices, course details)
+training.html   Team / corporate training
+pathway.html    Certification pathway and course finder
+about.html      About Think Risk
+faqs.html       Frequently asked questions
+contact.html    Enquiry form
+course-*.html   One page per course (9): e.g. course-27001-lead-auditor.html, with focus,
+                audience, entry notes, exam and certification steps, fee and related courses
+assets/favicon.png, assets/apple-touch-icon.png   Browser-tab and phone home-screen icons
+assets/styles.css   All colours, fonts and layout (shared by every page)
+assets/site.js      Course data, prices (AUD/MYR), menus, course finder and enquiry form
+assets/hero-motion.js  Home page background video (switches clips automatically)
+assets/video/*.mp4  Home page background video clips
+assets/logo-white.webp, assets/pecb-badge.webp, assets/hero-photo.webp
+                    Logo, PECB partner badge and home page photo (WebP, each under 200 KB)
+assets/og-image.jpg Link preview image (1200x630) shown when a page is shared on LinkedIn etc.
+assets/img/*.jpg    Course card photos (one per standard)
+sitemap.xml         List of all 16 pages for Google (upload to the site root)
+robots.txt          Tells search engines they may index the site and where the sitemap is
+
+COURSE CARD PHOTOS (Pexels free licence, commercial use allowed, attribution not required)
+  course-continuity.jpg  Planning at a sticky-note wall, by cottonbro studio
+                         https://www.pexels.com/photo/6804103/
+  course-ai.jpg          Executive reviewing a robotic arm, by Pavel Danilyuk
+                         https://www.pexels.com/photo/8439175/
+  course-security.jpg    Hand holding a padlock, by Nathan Thomas
+                         https://www.pexels.com/photo/36740854/
+To swap a photo, replace the file in assets/img with another 800x500 .jpg of the same name.
+
+HOME PAGE BACKGROUND VIDEO
+The home header plays a real video clip behind the headline, one per PECB standard
+(ISO 22301, ISO/IEC 42001, ISO/IEC 27001), cross-fading every 8 seconds under a soft
+navy and coral/rose tint. Each clip only downloads when it is about to play.
+On phones and data-saver connections the still photo is shown instead (no video download).
+A small pause/play icon sits in the bottom-left corner of the header (accessibility).
+Video credits (Pexels free licence, commercial use allowed, attribution not required):
+  pecb-continuity.mp4  "People in a business meeting discussing data and charts" by fauxels
+                       https://www.pexels.com/video/3246669/
+  pecb-ai.mp4          "A man looking at computer monitor" by Mikhail Nilov
+                       https://www.pexels.com/video/6962343/
+  pecb-security.mp4    "Database storage of a server" by theonlyabdulla
+                       https://www.pexels.com/video/5028622/
+To swap a clip, replace the file in assets/video with another .mp4 of the same name.
+It pauses automatically when scrolled out of view or when the tab is hidden, and shows the
+still photo for visitors whose device is set to reduce motion. Clip length: CLIP_MS near the
+top of assets/hero-motion.js.
+The home hero has one main "Explore courses" button. "Help me choose" sits in the home header
+beside Learning Plan and Enquire now (inside the menu on phones).
+
+EDITING
+- Prices and course descriptions: edit the "standards" and "levels" lists at the top of assets/site.js.
+- Colours: edit the variables at the top of assets/styles.css (--navy, --coral, etc.).
+  --coral-deep (#ad4c40) is the small coral text colour. It was darkened from #c9584b to reach
+  WCAG AA contrast (5.4:1 on white, 5.0:1 on the grey page background, 4.6:1 on pale coral).
+  Keep any replacement at 4.5:1 or higher on white.
+- Images: keep new photos as WebP or JPG under 200 KB. The logo is 192x192 and the badge 168x203
+  (3-4x their on-screen size, so they stay sharp on high-resolution screens).
+
+SEARCH AND SOCIAL SHARING
+The site address is set as https://pecb.thinkrisk.com.au/. If it is hosted anywhere else, find and
+replace that address in every .html page, sitemap.xml and robots.txt before going live.
+- Every page has a canonical link, Open Graph tags (LinkedIn/Facebook) and Twitter/X card tags,
+  using the page's existing title and description and assets/og-image.jpg as the preview image.
+- The 9 course pages also include schema.org "Course" structured data (name, description,
+  provider, AUD and MYR fees, online self-paced, 2- or 5-day workload). If a fee changes in
+  assets/site.js, change the matching "price" in that page's <script type="application/ld+json">.
+- After going live: check a page with https://www.linkedin.com/post-inspector/ and a course page
+  with https://search.google.com/test/rich-results, then submit sitemap.xml in Google Search Console.
+  Page previews and rich results only work once the site is published at that address.
+- The header and footer are repeated in each HTML page; change all 16 pages when editing them.
+
+LEARNING PLAN (THE SITE'S BASKET)
+The white "Learning Plan" button in the header, and the coral floating button in the bottom-right
+corner of every page, open "Your learning plan", a basket shared by every page. Once items are
+added the floating button shows the item count and total, and it pulses when something is added.
+On smaller screens the header button shows only the bag icon and count.
+Visitors can add any of the 9 courses (+ buttons on course cards, course details, course finder),
+an additional PECB course, or team training (a quote item). For each standard it shows a
+Foundation > Implementer > Auditor pathway tracker and suggests the next level.
+Seats can be adjusted and totals follow the AUD/MYR switch.
+"Request enrolment" opens the contact page with the learning plan included in the enquiry email.
+No payment is taken online. The plan is stored in the visitor's own browser only.
+Products and prices: the "catalogue" list near the top of assets/site.js.
+
+STILL TO CONFIRM
+- Online payment is not built. Taking payments needs a shop or payment service (for example
+  Stripe, PayPal or a WooCommerce/Shopify store) once the site is hosted.
+- The enquiry form prepares an email draft to pecb@thinkrisk.com.au; it does not send directly. Direct sending needs a form service or server.
+- New wording added in the redesign that should be checked: "Keep growing" (pathway, credential steps).
+- Company facts, industries, services, testimonials, social links and the Privacy Policy and
+  Cookies links (Home, About and footer) were taken from thinkrisk.com.au on 30 October 2026.
+  The testimonials are from clients of Think Risk's risk, compliance and HSSEQ services, and are
+  labelled that way. Replace them with PECB training testimonials when available.
+- Still not on the site: ABN, phone number and office address. (No trainer profiles: courses are
+  self-paced.)

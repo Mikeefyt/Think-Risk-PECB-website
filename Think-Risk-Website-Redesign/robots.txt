@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pecb.thinkrisk.com.au/sitemap.xml
