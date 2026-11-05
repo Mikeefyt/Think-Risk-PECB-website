@@ -1,0 +1,16 @@
+import Link from 'next/link';
+import { PrivacyButton, Year } from './FooterClient';
+
+export function Footer() {
+  return (
+    <footer><div className="wrap">
+      <div className="foot">
+        <div className="foot-about"><Link className="brand" href="/"><img src="/assets/logo-white.webp" alt="" width={48} height={48} /><b>Think Risk<small>INTERNATIONAL</small></b></Link><p>PECB-accredited online training from Think Risk International Pty Ltd, an Australian-owned risk, compliance and HSSEQ specialist.</p><div className="foot-trust"><img className="badge" src="/assets/pecb-badge.webp" alt="PECB Authorized Partner" width={56} height={68} loading="lazy" /><div className="socials"><a href="https://www.linkedin.com/company/think-risk" target="_blank" rel="noopener" aria-label="Think Risk International on LinkedIn (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3zm7 0h3.8v1.5h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1v6.45h-4v-5.7c0-1.36-.03-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3v5.8h-4z" /></svg></a><a href="https://www.instagram.com/ThinkRisk_International/" target="_blank" rel="noopener" aria-label="Think Risk International on Instagram (opens in a new tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg></a><a href="https://www.facebook.com/p/Think-Risk-International-61573038975494/" target="_blank" rel="noopener" aria-label="Think Risk International on Facebook (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2H7.5v3.4h2.8V21h3.7v-9.1h2.8l.4-3.4z" /></svg></a></div></div></div>
+        <div><h4>Courses</h4><ul><li><Link href="/courses#course-22301">Business Continuity</Link></li><li><Link href="/courses#course-42001">AI Management Systems</Link></li><li><Link href="/courses#course-27001">Information Security</Link></li><li><Link href="/courses">All courses &amp; prices</Link></li></ul></div>
+        <div><h4>Explore</h4><ul><li><Link href="/pathway">Certification pathway</Link></li><li><Link href="/training">Team training</Link></li><li><Link href="/about">About us</Link></li><li><Link href="/faqs">FAQs</Link></li></ul></div>
+        <div><h4>Contact</h4><ul><li><a href="mailto:pecb@thinkrisk.com.au">pecb@thinkrisk.com.au</a></li><li><Link href="/contact">Enquiry form</Link></li><li><a href="https://thinkrisk.com.au/" target="_blank" rel="noopener">thinkrisk.com.au ↗</a></li><li>Offices: Australia · Philippines · Malaysia · Middle East</li></ul></div>
+      </div>
+      <div className="foot-bottom"><span>© <Year /> Think Risk International Pty Ltd</span><nav aria-label="Footer"><PrivacyButton /><a href="https://thinkrisk.com.au/privacy-policy" target="_blank" rel="noopener">Privacy Policy ↗</a><a href="https://thinkrisk.com.au/cookies" target="_blank" rel="noopener">Cookies ↗</a><a href="#main">Back to top ↑</a></nav></div>
+    </div></footer>
+  );
+}

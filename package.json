@@ -1,17 +1,33 @@
 {
   "name": "think-risk-pecb-website",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Think Risk International PECB training website redesign (static HTML/CSS/JS)",
+  "description": "Think Risk International PECB training website (Next.js)",
   "author": "Marc Celine Cruz <marc.cruz@freeyourtime.com.au>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Mikeefyt/Think-Risk-PECB-website.git"
   },
   "scripts": {
-    "start": "node tools/serve.js Think-Risk-Website-Redesign 8080"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9"
+  },
+  "dependencies": {
+    "next": "16.4.5",
+    "nodemailer": "10.3.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/nodemailer": "8.0.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "5.9.3"
   }
 }

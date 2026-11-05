@@ -2,6 +2,18 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "next-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000
+    },
+    {
+      "name": "next-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--", "-p", "3001"],
+      "port": 3001
+    },
+    {
       "name": "think-risk-site",
       "runtimeExecutable": "node",
       "runtimeArgs": ["tools/serve.js", "Think-Risk-Website-Redesign", "8080"],
