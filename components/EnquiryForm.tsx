@@ -2,7 +2,7 @@
 /* Contact form: sends the enquiry straight to Think Risk via /api/enquiry.
    If it can't be sent (email not set up yet, or an error), it prepares an email draft instead. */
 import { useEffect, useRef, useState } from 'react';
-import { catalogue, EMAIL, levels, money, type Market } from '@/lib/courses';
+import { catalogue, EMAIL, isMarket, levels, markets, money, type Market } from '@/lib/courses';
 import { buildEnquiry, LIMITS, type EnquiryFields } from '@/lib/enquiry';
 import { Arrow } from './icons';
 import { basketTotal, useSite } from './SiteProvider';
@@ -39,7 +39,7 @@ export function EnquiryForm() {
   const nameRef = useRef<HTMLInputElement>(null);
   const prefilled = useRef(false);
 
-  // Keep the currency select in step with the AUD/MYR switch
+  // Keep the currency select in step with the currency switch
   useEffect(() => { setF(v => ({ ...v, market })); }, [market]);
 
   // Pre-fill from links such as /contact?interest=...&level=... or the learning plan's "Request enrolment"
@@ -47,7 +47,7 @@ export function EnquiryForm() {
     if (!loaded || prefilled.current) return;
     prefilled.current = true;
     const q = new URLSearchParams(location.search), interest = q.get('interest'), lvl = q.get('level'), qm = q.get('market');
-    if (qm === 'AU' || qm === 'MY') setMarket(qm);
+    if (isMarket(qm)) setMarket(qm);
     if (q.get('basket') === '1' && basket.length) {
       setF(v => ({ ...v, interest: PLAN, message: 'I would like to enrol in the courses in my learning plan. Please confirm availability, inclusions and final pricing.' }));
     } else if (interest && INTERESTS.includes(interest)) {
@@ -95,7 +95,7 @@ export function EnquiryForm() {
         </div>
         <div className="form-row">
           <div><label htmlFor="f-org">Organisation</label><input id="f-org" name="organisation" autoComplete="organization" placeholder="Company name" maxLength={LIMITS.organisation} value={f.organisation} onChange={set('organisation')} /></div>
-          <div><label htmlFor="form-market">Pricing currency</label><select id="form-market" name="market" value={f.market} onChange={e => setMarket(e.target.value as Market)}><option value="AU">AUD — Australian dollars</option><option value="MY">MYR — Malaysian ringgit</option></select></div>
+          <div><label htmlFor="form-market">Pricing currency</label><select id="form-market" name="market" value={f.market} onChange={e => setMarket(e.target.value as Market)}>{markets.map(m => <option key={m.id} value={m.id}>{m.code} — {m.name}</option>)}</select></div>
         </div>
         <div><label htmlFor="interest">What are you interested in? <span className="req" aria-hidden="true">*</span></label><select id="interest" name="interest" required value={f.interest} onChange={set('interest')}><option value="">Select a course or team training</option>{basket.length > 0 && <option>{PLAN}</option>}{INTERESTS.map(i => <option key={i}>{i}</option>)}</select></div>
         <div><label htmlFor="f-msg">Your goals</label><textarea id="f-msg" name="message" rows={4} placeholder="Your preferred level, goals, country and time zone. For teams, include participant numbers…" maxLength={LIMITS.message} value={f.message} onChange={set('message')}></textarea></div>

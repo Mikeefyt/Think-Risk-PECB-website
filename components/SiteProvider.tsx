@@ -2,7 +2,7 @@
 /* Shared site state: pricing currency and the learning plan (basket).
    Both are kept in this browser only (localStorage) and shared by every page and tab. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { catalogue, money, type Market } from '@/lib/courses';
+import { catalogue, isMarket, money, type Market } from '@/lib/courses';
 
 export interface BasketLine { id: string; qty: number }
 
@@ -59,7 +59,7 @@ export function SiteProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const m = localStorage.getItem('tr-market');
-      if (m === 'AU' || m === 'MY') setMarketState(m);
+      if (isMarket(m)) setMarketState(m);
       setBasket(readBasket(localStorage.getItem('tr-basket')));
     } catch { /* storage unavailable */ }
     setLoaded(true);

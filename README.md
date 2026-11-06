@@ -18,7 +18,7 @@ To check a production build: `npm run build`, then `npm start`. `npm run typeche
 
 | What | Where |
 |---|---|
-| Course data, prices (AUD/MYR), levels, learning-plan items | `lib/courses.ts` |
+| Course data, prices (AUD/MYR/USD), currencies, levels, learning-plan items | `lib/courses.ts` |
 | Pages | `app/**/page.tsx` (e.g. `app/about/page.tsx`) |
 | The 9 course pages (one template) | `app/courses/[slug]/page.tsx` → `/courses/27001-lead-auditor` etc. |
 | Header, footer, learning plan, course finder, enquiry form | `components/` |
@@ -68,6 +68,9 @@ This site runs as a Node.js app, so it needs a Hostinger plan that supports Node
 
 ## Still to confirm
 
+- USD prices (Foundation USD $280, Lead Implementer/Auditor USD $695, additional PECB course USD $420)
+  were converted from AUD at 0.70 on 6 November 2026 and rounded. Confirm them, or replace them in
+  `lib/courses.ts`. They don't follow exchange-rate changes automatically.
 - New wording for direct sending, which should be checked: contact page steps ("Complete. Submit. Hear
   from Think Risk."), the form note, the "Enquiry sent" message, the FAQ "What happens when I select
   Submit Enquiry?" and the "Enquiry privacy" notice.

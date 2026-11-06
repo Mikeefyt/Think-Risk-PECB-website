@@ -4,7 +4,17 @@
 export const EMAIL = 'pecb@thinkrisk.com.au';
 export const SITE_URL = 'https://pecb.thinkrisk.com.au';
 
-export type Market = 'AU' | 'MY';
+export type Market = 'AU' | 'MY' | 'US';
+
+/** Pricing currencies, in the order shown on the currency switch and the enquiry form.
+   USD prices were converted from AUD at 0.70 (6 November 2026) and rounded. */
+export const markets: { id: Market; code: string; name: string; prefix: string }[] = [
+  { id: 'AU', code: 'AUD', name: 'Australian dollars', prefix: 'AUD $' },
+  { id: 'MY', code: 'MYR', name: 'Malaysian ringgit', prefix: 'MYR ' },
+  { id: 'US', code: 'USD', name: 'US dollars', prefix: 'USD $' },
+];
+export const isMarket = (m: unknown): m is Market => markets.some(x => x.id === m);
+export const currencyCode = (m: Market) => markets.find(x => x.id === m)!.code;
 export type StandardId = '22301' | '42001' | '27001';
 export type LevelName = 'Foundation' | 'Lead Implementer' | 'Lead Auditor';
 
@@ -26,6 +36,7 @@ export interface Level {
   days: number;
   AU: string;
   MY: string;
+  US: string;
   num: Record<Market, number>;
   label: string;
   audience: string;
@@ -63,29 +74,29 @@ const LEAD_BEFORE = 'Entry requirements for Lead courses vary. Review the prereq
 
 export const levels: Level[] = [
   {
-    name: 'Foundation', days: 2, AU: 'AUD $400', MY: 'MYR 1,180', num: { AU: 400, MY: 1180 }, label: 'Understand the fundamentals',
+    name: 'Foundation', days: 2, AU: 'AUD $400', MY: 'MYR 1,180', US: 'USD $280', num: { AU: 400, MY: 1180, US: 280 }, label: 'Understand the fundamentals',
     audience: 'Professionals who want an introduction to the standard and its main management system concepts.',
     focus: 'Main concepts, terminology and management system requirements',
     before: 'Foundation can be useful when you are new to a standard. Confirm the entry requirements, learning format and course access period for your selected course before enrolling.',
   },
   {
-    name: 'Lead Implementer', days: 5, AU: 'AUD $995', MY: 'MYR 2,950', num: { AU: 995, MY: 2950 }, label: 'Implement and manage a system',
+    name: 'Lead Implementer', days: 5, AU: 'AUD $995', MY: 'MYR 2,950', US: 'USD $695', num: { AU: 995, MY: 2950, US: 695 }, label: 'Implement and manage a system',
     audience: 'Professionals responsible for implementing or managing the system, and consultants supporting that work.',
     focus: 'Planning, implementation, monitoring and continual improvement of the system',
     before: LEAD_BEFORE,
   },
   {
-    name: 'Lead Auditor', days: 5, AU: 'AUD $995', MY: 'MYR 2,950', num: { AU: 995, MY: 2950 }, label: 'Assess and audit a system',
+    name: 'Lead Auditor', days: 5, AU: 'AUD $995', MY: 'MYR 2,950', US: 'USD $695', num: { AU: 995, MY: 2950, US: 695 }, label: 'Assess and audit a system',
     audience: 'Professionals working in audit, assurance or management system conformity assessment.',
     focus: 'Audit principles, preparation, evidence, findings and reporting',
     before: LEAD_BEFORE,
   },
 ];
 
-export const extraPrice: Record<Market, string> = { AU: 'AUD $600', MY: 'MYR 1,750' };
+export const extraPrice: Record<Market, string> = { AU: 'AUD $600', MY: 'MYR 1,750', US: 'USD $420' };
 
 export const slug = (t: string) => t.toLowerCase().replace(/\s+/g, '-');
-export const money = (n: number, m: Market) => (m === 'AU' ? 'AUD $' : 'MYR ') + n.toLocaleString('en-AU');
+export const money = (n: number, m: Market) => markets.find(x => x.id === m)!.prefix + n.toLocaleString('en-AU');
 export const courseId = (s: Standard, l: Level) => `${s.id}-${slug(l.name)}`;
 export const courseHref = (s: Standard, l: Level) => `/courses/${courseId(s, l)}`;
 
@@ -103,7 +114,7 @@ export const catalogue: Record<string, CatalogueItem> = {};
 standards.forEach(s => levels.forEach(l => {
   catalogue[courseId(s, l)] = { std: s.id, level: l.name, code: s.code, title: `${s.code} ${l.name}`, sub: `${s.title} · ${l.days}-day self-paced`, price: l.num };
 }));
-catalogue['other-pecb'] = { title: 'Additional PECB course', sub: 'Three-day online course — tell us which one', price: { AU: 600, MY: 1750 } };
+catalogue['other-pecb'] = { title: 'Additional PECB course', sub: 'Three-day online course — tell us which one', price: { AU: 600, MY: 1750, US: 420 } };
 catalogue['team-training'] = { title: 'Team training pathway', sub: 'Role-based training for your organisation', price: null };
 
 export const pathwayInfo: Record<LevelName, { title: string; text: string }> = {

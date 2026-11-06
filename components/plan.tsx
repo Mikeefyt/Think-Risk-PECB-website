@@ -1,6 +1,6 @@
 'use client';
 /* Small building blocks used inside page content: prices that follow the
-   AUD/MYR switch, "add to learning plan" buttons and "open learning plan" buttons. */
+   AUD/MYR/USD switch, "add to learning plan" buttons and "open learning plan" buttons. */
 import { catalogue, money } from '@/lib/courses';
 import { useSite } from './SiteProvider';
 

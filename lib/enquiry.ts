@@ -1,6 +1,6 @@
 /* Builds the enquiry email. Used by the server (direct sending) and by the browser
    (the email-draft fallback), so both produce exactly the same text. */
-import { catalogue, money, type Market } from './courses';
+import { catalogue, currencyCode, money, type Market } from './courses';
 
 export interface EnquiryFields {
   name: string;
@@ -26,7 +26,7 @@ export function cleanPlan(plan: unknown): PlanLine[] {
 
 export function buildEnquiry(f: EnquiryFields, plan: PlanLine[]) {
   const m = f.market;
-  const cur = m === 'MY' ? 'MYR' : 'AUD';
+  const cur = currencyCode(m);
   const subject = `PECB training enquiry — ${f.interest}`;
   let total = 0, quotes = 0;
   const lines = plan.map(i => {

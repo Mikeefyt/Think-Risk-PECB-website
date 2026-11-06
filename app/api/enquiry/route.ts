@@ -2,7 +2,7 @@
    Settings come from environment variables; see .env.example. If SMTP is not set up,
    or sending fails, the form falls back to preparing an email draft in the browser. */
 import nodemailer from 'nodemailer';
-import { EMAIL } from '@/lib/courses';
+import { EMAIL, isMarket } from '@/lib/courses';
 import { buildEnquiry, cleanPlan, isEmail, LIMITS, type EnquiryFields } from '@/lib/enquiry';
 
 export const runtime = 'nodejs';
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     name: oneLine(str(data.name, LIMITS.name)),
     email: oneLine(str(data.email, LIMITS.email)),
     organisation: oneLine(str(data.organisation, LIMITS.organisation)),
-    market: data.market === 'MY' ? 'MY' : 'AU',
+    market: isMarket(data.market) ? data.market : 'AU',
     interest: oneLine(str(data.interest, LIMITS.interest)),
     message: str(data.message, LIMITS.message),
   };

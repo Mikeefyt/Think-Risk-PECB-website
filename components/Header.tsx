@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Arrow, BagIcon } from './icons';
 import { replayClass, useSite } from './SiteProvider';
-import type { Market } from '@/lib/courses';
+import { markets } from '@/lib/courses';
 
 const NAV = [
   { href: '/', label: 'Home' },
@@ -17,13 +17,12 @@ const NAV = [
 
 export function TopBar() {
   const { market, setMarket } = useSite();
-  const btn = (m: Market, label: string) => (
-    <button type="button" data-market={m} aria-pressed={market === m} onClick={() => setMarket(m)}>{label}</button>
-  );
   return (
     <div className="topbar"><div className="wrap">
       <span><strong>PECB Authorized Partner</strong><span className="hide-sm"> · Self-paced online certification training, available worldwide</span></span>
-      <div className="currency" role="group" aria-label="Pricing currency"><span className="hide-sm">Prices in</span>{btn('AU', 'AUD')}{btn('MY', 'MYR')}</div>
+      <div className="currency" role="group" aria-label="Pricing currency"><span className="hide-sm">Prices in</span>
+        {markets.map(m => <button key={m.id} type="button" data-market={m.id} aria-pressed={market === m.id} onClick={() => setMarket(m.id)}>{m.code}</button>)}
+      </div>
     </div></div>
   );
 }

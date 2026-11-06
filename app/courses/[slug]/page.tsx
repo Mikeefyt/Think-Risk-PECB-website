@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Arrow } from '@/components/icons';
 import { AddButton, Price } from '@/components/plan';
-import { courseHref, courseId, courses, findCourse, goal, levels, SITE_URL, standards, type Level, type Standard } from '@/lib/courses';
+import { courseHref, courseId, courses, findCourse, goal, levels, markets, SITE_URL, standards, type Level, type Standard } from '@/lib/courses';
 import { pageMetadata } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /** schema.org Course structured data for Google */
 function courseJsonLd(s: Standard, l: Level) {
   const url = `${SITE_URL}${courseHref(s, l)}`;
-  const offer = (cur: 'AUD' | 'MYR', price: number) => ({ '@type': 'Offer', category: 'Paid', price, priceCurrency: cur, url });
+  const offers = markets.map(m => ({ '@type': 'Offer', category: 'Paid', price: l.num[m.id], priceCurrency: m.code, url }));
   return {
     '@context': 'https://schema.org',
     '@type': 'Course',
@@ -39,7 +39,7 @@ function courseJsonLd(s: Standard, l: Level) {
     availableLanguage: ['en'],
     about: `${s.code} ${s.title}`,
     provider: { '@type': 'Organization', name: 'Think Risk International', legalName: 'Think Risk International Pty Ltd', url: 'https://thinkrisk.com.au/' },
-    offers: [offer('AUD', l.num.AU), offer('MYR', l.num.MY)],
+    offers,
     hasCourseInstance: [{ '@type': 'CourseInstance', courseMode: 'Online', courseWorkload: `P${l.days}D` }],
   };
 }
