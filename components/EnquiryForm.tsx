@@ -1,9 +1,9 @@
 'use client';
 /* Contact form: sends the enquiry straight to Think Risk via /api/enquiry.
-   If it can't be sent (email not set up yet, or an error), it prepares an email draft instead. */
+   If it can't be sent, it keeps what the visitor typed and shows an error so they can try again. */
 import { useEffect, useRef, useState } from 'react';
 import { catalogue, EMAIL, isMarket, levels, markets, money, type Market } from '@/lib/courses';
-import { buildEnquiry, LIMITS, type EnquiryFields } from '@/lib/enquiry';
+import { LIMITS, type EnquiryFields } from '@/lib/enquiry';
 import { Arrow } from './icons';
 import { basketTotal, useSite } from './SiteProvider';
 
@@ -23,19 +23,16 @@ function BasketSummary() {
   );
 }
 
-type Status = 'form' | 'sending' | 'sent' | 'draft';
+type Status = 'form' | 'sending' | 'sent';
 
 export function EnquiryForm() {
   const { basket, loaded, market, setMarket } = useSite();
   const [status, setStatus] = useState<Status>('form');
   const [f, setF] = useState<EnquiryFields>({ name: '', email: '', organisation: '', market: 'AU', interest: '', message: '' });
-  const [draft, setDraft] = useState({ subject: '', body: '' });
-  const [copyStatus, setCopyStatus] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<React.ReactNode>('');
   const honeypot = useRef<HTMLInputElement>(null);
-  const draftRef = useRef<HTMLTextAreaElement>(null);
   const sentHeading = useRef<HTMLHeadingElement>(null);
-  const openEmail = useRef<HTMLAnchorElement>(null);
+  const errorRef = useRef<HTMLParagraphElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const prefilled = useRef(false);
 
@@ -57,7 +54,6 @@ export function EnquiryForm() {
 
   useEffect(() => {
     if (status === 'sent') sentHeading.current?.focus();
-    if (status === 'draft') openEmail.current?.focus();
   }, [status]);
 
   const set = (k: keyof EnquiryFields) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setF(v => ({ ...v, [k]: e.target.value }));
@@ -66,29 +62,26 @@ export function EnquiryForm() {
     e.preventDefault();
     setError('');
     const plan = basket.map(i => ({ id: i.id, qty: i.qty }));
-    setDraft(buildEnquiry(f, plan));
     setStatus('sending');
+    let res: Response | undefined;
     try {
-      const res = await fetch('/api/enquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...f, plan, website: honeypot.current?.value || '' }) });
+      res = await fetch('/api/enquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...f, plan, website: honeypot.current?.value || '' }) });
       if (res.ok) { setStatus('sent'); return; }
-      if (res.status === 400) { setStatus('form'); setError('Please check your name, email address and area of interest, then try again.'); return; }
-    } catch { /* network error: fall back to the email draft */ }
-    setCopyStatus('');
-    setStatus('draft');
+    } catch { /* network error: handled below */ }
+    setStatus('form');
+    const mail = <a href={`mailto:${EMAIL}`}>{EMAIL}</a>;
+    if (res?.status === 400) setError('Please check your name, email address and area of interest, then try again.');
+    else if (res?.status === 429) setError(<>You’ve sent several enquiries in a short time. Please wait a few minutes and try again, or email us at {mail}.</>);
+    else setError(<>Sorry, we couldn’t send your enquiry just now. Please try again in a moment, or email us at {mail}.</>);
+    setTimeout(() => errorRef.current?.focus());
   };
 
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(draftRef.current?.value || ''); setCopyStatus('Copied.'); }
-    catch { draftRef.current?.select(); setCopyStatus('Select and copy the text above.'); }
-  };
-
-  const edit = () => { setStatus('form'); setTimeout(() => nameRef.current?.focus()); };
-  const restart = () => { setF(v => ({ ...v, organisation: '', interest: '', message: '' })); edit(); };
+  const restart = () => { setF(v => ({ ...v, organisation: '', interest: '', message: '' })); setStatus('form'); setTimeout(() => nameRef.current?.focus()); };
 
   return (
     <div className="form-card" id="enquiry">
       <BasketSummary />
-      <form className="form" id="enquiry-form" hidden={status === 'sent' || status === 'draft'} onSubmit={onSubmit}>
+      <form className="form" id="enquiry-form" hidden={status === 'sent'} onSubmit={onSubmit}>
         <div className="form-row">
           <div><label htmlFor="f-name">Full name <span className="req" aria-hidden="true">*</span></label><input ref={nameRef} id="f-name" name="name" autoComplete="name" placeholder="Your full name" required maxLength={LIMITS.name} value={f.name} onChange={set('name')} /></div>
           <div><label htmlFor="f-email">Work email <span className="req" aria-hidden="true">*</span></label><input id="f-email" name="email" type="email" autoComplete="email" placeholder="you@company.com" required maxLength={LIMITS.email} value={f.email} onChange={set('email')} /></div>
@@ -100,7 +93,7 @@ export function EnquiryForm() {
         <div><label htmlFor="interest">What are you interested in? <span className="req" aria-hidden="true">*</span></label><select id="interest" name="interest" required value={f.interest} onChange={set('interest')}><option value="">Select a course or team training</option>{basket.length > 0 && <option>{PLAN}</option>}{INTERESTS.map(i => <option key={i}>{i}</option>)}</select></div>
         <div><label htmlFor="f-msg">Your goals</label><textarea id="f-msg" name="message" rows={4} placeholder="Your preferred level, goals, country and time zone. For teams, include participant numbers…" maxLength={LIMITS.message} value={f.message} onChange={set('message')}></textarea></div>
         <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}><label htmlFor="f-website">Leave this field empty</label><input ref={honeypot} id="f-website" name="website" tabIndex={-1} autoComplete="off" /></div>
-        {error && <p className="form-note" role="alert">{error}</p>}
+        {error && <p ref={errorRef} tabIndex={-1} className="form-note form-error" role="alert">{error}</p>}
         <button className="btn btn-coral" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending…' : <>Submit enquiry <Arrow /></>}</button>
         <p className="form-note"><span className="req" aria-hidden="true">*</span> Required. Submitting emails your enquiry straight to Think Risk — nothing is stored on this website.</p>
       </form>
@@ -112,14 +105,6 @@ export function EnquiryForm() {
         <button type="button" className="link-btn" onClick={restart}>← Send another enquiry</button>
       </div>
 
-      <div id="email-result" className="email-result" hidden={status !== 'draft'} aria-live="polite">
-        <span className="kicker">Your next step</span>
-        <h3>Your enquiry is ready.</h3>
-        <p>We couldn’t send it automatically, so it has been prepared as an email. Open the draft in your email app, then review and send it to <strong>{EMAIL}</strong>.</p>
-        <a ref={openEmail} id="open-email" className="btn btn-coral" href={`mailto:${EMAIL}?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`}>Open email draft ↗</a>
-        <details><summary>Prefer to copy your enquiry?</summary><textarea ref={draftRef} id="email-draft" rows={9} readOnly aria-label="Enquiry email text" value={`To: ${EMAIL}\nSubject: ${draft.subject}\n\n${draft.body}`}></textarea><button type="button" id="copy-enquiry" className="link-btn" onClick={copy}>Copy enquiry</button><span id="copy-status" role="status">{copyStatus}</span></details>
-        <button type="button" id="edit-enquiry" className="link-btn" onClick={edit}>← Edit enquiry</button>
-      </div>
     </div>
   );
 }

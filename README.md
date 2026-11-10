@@ -34,21 +34,22 @@ Course structured data for Google. Old `.html` addresses (e.g. `/about.html`) re
 
 ## Enquiry emails
 
-The contact form sends enquiries straight to pecb@thinkrisk.com.au through an SMTP mailbox, with the
-visitor's address as Reply-To. Settings are environment variables (see `.env.example`):
+The contact form sends enquiries straight to pecb@thinkrisk.com.au through [Resend](https://resend.com),
+with the visitor's address as Reply-To. They are sent from the domain `pecbthinkrisk.com.au`
+(verified in Resend; its DKIM and `send`/`rsend` records are in Hostinger DNS), so the company
+email on thinkrisk.com.au (Microsoft 365) is not affected. Settings are environment variables
+(see `.env.example`):
 
 | Variable | Example |
 |---|---|
-| `SMTP_HOST` | `smtp.hostinger.com` |
-| `SMTP_PORT` | `465` |
-| `SMTP_USER` | `noreply@thinkrisk.com.au` |
-| `SMTP_PASS` | mailbox password (never commit it) |
+| `RESEND_API_KEY` | `re_...` (Sending access, never commit it) |
+| `ENQUIRY_FROM` | `enquiries@pecbthinkrisk.com.au` |
 | `ENQUIRY_TO` | `pecb@thinkrisk.com.au` (default) |
 
-Locally, copy `.env.example` to `.env.local` and fill it in. Until SMTP is set up, or if sending fails,
-the form falls back to preparing an email draft for the visitor, as the old static site did.
-Spam protection: a hidden honeypot field and a limit of 5 enquiries per visitor every 10 minutes.
-Add SPF/DKIM records for the sending domain so enquiries don't land in spam.
+Locally, copy `.env.example` to `.env.local` and fill it in. If sending isn't set up or fails, the form
+keeps what the visitor typed and shows an error asking them to try again or email pecb@thinkrisk.com.au;
+the reason is logged on the server. Spam protection: a hidden honeypot field and a limit of 5 enquiries
+per visitor every 10 minutes.
 
 ## Deploying to Hostinger (Node.js)
 
@@ -60,7 +61,7 @@ This site runs as a Node.js app, so it needs a Hostinger plan that supports Node
 2. Node version: 20 or 22.
 3. Build command: `npm install && npm run build`. Start command: `npm start`
    (`next start` uses the `PORT` that Hostinger provides).
-4. Add the SMTP environment variables above in the app's settings.
+4. Add the enquiry email environment variables above in the app's settings.
 5. Turn on SSL for the domain.
 6. After going live: submit `https://pecb.thinkrisk.com.au/sitemap.xml` in Google Search Console, test a
    course page in Google's Rich Results Test and a page in LinkedIn Post Inspector, and send yourself a

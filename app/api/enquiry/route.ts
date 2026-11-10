@@ -1,7 +1,6 @@
-/* Sends enquiries from the contact form straight to Think Risk by email (SMTP).
-   Settings come from environment variables; see .env.example. If SMTP is not set up,
-   or sending fails, the form falls back to preparing an email draft in the browser. */
-import nodemailer from 'nodemailer';
+/* Sends enquiries from the contact form straight to Think Risk by email, through Resend
+   (https://resend.com). Settings come from environment variables; see .env.example.
+   If sending isn't set up or fails, the form shows an error asking the visitor to try again. */
 import { EMAIL, isMarket } from '@/lib/courses';
 import { buildEnquiry, cleanPlan, isEmail, LIMITS, type EnquiryFields } from '@/lib/enquiry';
 
@@ -43,25 +42,31 @@ export async function POST(req: Request) {
   const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
   if (tooMany(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, ENQUIRY_TO, ENQUIRY_FROM } = process.env;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return json({ ok: false, error: 'not_configured' }, 503);
+  const { RESEND_API_KEY, ENQUIRY_TO, ENQUIRY_FROM } = process.env;
+  if (!RESEND_API_KEY || !ENQUIRY_FROM) {
+    console.error('Enquiry email not sent: set RESEND_API_KEY and ENQUIRY_FROM (see .env.example).');
+    return json({ ok: false, error: 'not_configured' }, 503);
+  }
 
-  const port = Number(SMTP_PORT || 465);
   const { subject, body } = buildEnquiry(f, cleanPlan(data.plan));
+  const displayName = f.name.replace(/["\\]/g, '');
   try {
-    const transport = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port,
-      secure: SMTP_SECURE ? SMTP_SECURE === 'true' : port === 465,
-      auth: { user: SMTP_USER, pass: SMTP_PASS },
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: `Think Risk PECB website <${ENQUIRY_FROM}>`,
+        to: [ENQUIRY_TO || EMAIL],
+        reply_to: `"${displayName}" <${f.email}>`,
+        subject,
+        text: body,
+      }),
+      signal: AbortSignal.timeout(15000),
     });
-    await transport.sendMail({
-      from: { name: 'Think Risk PECB website', address: ENQUIRY_FROM || SMTP_USER },
-      to: ENQUIRY_TO || EMAIL,
-      replyTo: { name: f.name, address: f.email },
-      subject,
-      text: body,
-    });
+    if (!res.ok) {
+      console.error(`Enquiry email failed: Resend replied ${res.status}:`, await res.text().catch(() => ''));
+      return json({ ok: false, error: 'send_failed' }, 502);
+    }
     return json({ ok: true });
   } catch (err) {
     console.error('Enquiry email failed:', err instanceof Error ? err.message : err);

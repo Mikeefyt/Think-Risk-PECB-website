@@ -44,7 +44,7 @@ export default function Page() {
         <div className="steps">
           <div className="step reveal"><div className="step-n">1</div><h3>Complete the form</h3><p>Add your contact details and training goals.</p></div>
           <div className="step reveal"><div className="step-n">2</div><h3>Select Submit enquiry</h3><p>Your enquiry is emailed straight to Think Risk.</p></div>
-          <div className="step reveal"><div className="step-n">3</div><h3>If it can’t be sent</h3><p>We’ll prepare an email draft for you to review and send instead.</p></div>
+          <div className="step reveal"><div className="step-n">3</div><h3>Look for the confirmation</h3><p>You’ll see a message as soon as your enquiry has been sent.</p></div>
           <div className="step reveal"><div className="step-n">✓</div><h3>We’ll be in touch</h3><p>Think Risk will help you explore suitable courses and enrolment options.</p></div>
         </div>
       </div></section>

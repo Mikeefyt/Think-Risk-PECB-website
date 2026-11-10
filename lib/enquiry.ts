@@ -1,5 +1,4 @@
-/* Builds the enquiry email. Used by the server (direct sending) and by the browser
-   (the email-draft fallback), so both produce exactly the same text. */
+/* Builds the enquiry email that the server sends to Think Risk (app/api/enquiry/route.ts). */
 import { catalogue, currencyCode, money, type Market } from './courses';
 
 export interface EnquiryFields {
